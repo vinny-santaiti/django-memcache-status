@@ -1,6 +1,7 @@
 from django import template
 from django.conf import settings
 from django.core.cache import get_cache
+from django.template import render_to_string
 
 if get_cache.__module__.startswith('debug_toolbar'):
     from debug_toolbar.panels.cache import base_get_cache as get_cache
@@ -24,8 +25,8 @@ class CacheStats(template.Node):
                         cache_backend_nm, server_name), server_stats))
             except AttributeError: # this backend probably doesn't support that
                 continue
-        context['cache_stats'] = cache_stats
-        return ''
+        return render_to_string('memcache_status/panel.html',
+            {'cache_stats': cache_stats}, context)
 
 @register.tag
 def get_cache_stats(parser, token):
